@@ -6,6 +6,7 @@ import { MockInterview } from "@/utils/schema";
 import { eq } from "drizzle-orm";
 import { QuestionSection } from "./_components/questionSection";
 import VideoSection from "./_components/videoSection";
+import { Button } from "@/components/ui/button";
 
 const page = ({ params }) => {
   const [interviewData, setInterviewData] = useState();
@@ -28,15 +29,41 @@ const page = ({ params }) => {
     setInterviewData(result[0]);
   };
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-      <QuestionSection
-        mockInterviewQuestions={mockInterviewQuestions}
-        activeQuestionIndex={activeQuestionIndex}
-        setActiveQuestionIndex={setActiveQuestionIndex}
-      />
-      {/* <VideoSection /> */}
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <QuestionSection
+          mockInterviewQuestions={mockInterviewQuestions}
+          activeQuestionIndex={activeQuestionIndex}
+          setActiveQuestionIndex={setActiveQuestionIndex}
+        />
+        {/* <VideoSection /> */}
 
-      <VideoSection />
+        <VideoSection
+          mockInterviewQuestions={mockInterviewQuestions}
+          activeQuestionIndex={activeQuestionIndex}
+          setActiveQuestionIndex={setActiveQuestionIndex}
+          interviewData={interviewData}
+        />
+      </div>
+      <div className="flex justify-end gap-6">
+        {activeQuestionIndex > 0 && (
+          <Button
+            onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
+          >
+            Previous Question
+          </Button>
+        )}
+        {activeQuestionIndex !== mockInterviewQuestions?.length - 1 && (
+          <Button
+            onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+          >
+            Next Question
+          </Button>
+        )}
+        {activeQuestionIndex === mockInterviewQuestions?.length - 1 && (
+          <Button>End Interview</Button>
+        )}
+      </div>
     </div>
   );
 };
