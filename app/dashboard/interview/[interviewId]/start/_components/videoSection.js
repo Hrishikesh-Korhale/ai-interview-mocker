@@ -25,6 +25,7 @@ const VideoSection = ({
     interimResult,
     isRecording,
     results,
+    setResults,
     startSpeechToText,
     stopSpeechToText,
   } = useSpeechToText({
@@ -88,10 +89,13 @@ const VideoSection = ({
       createdAt: moment.utc(),
     });
 
-    setUserAnswer("");
     if (resp) {
+      setUserAnswer("");
+      setResults([]);
       toast.success("Your answer recorded sucessfully");
     }
+    setUserAnswer("");
+    setResults([]);
     setLoading(false);
   };
 

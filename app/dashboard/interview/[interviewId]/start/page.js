@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { QuestionSection } from "./_components/questionSection";
 import VideoSection from "./_components/videoSection";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const page = ({ params }) => {
   const [interviewData, setInterviewData] = useState();
@@ -61,7 +62,11 @@ const page = ({ params }) => {
           </Button>
         )}
         {activeQuestionIndex === mockInterviewQuestions?.length - 1 && (
-          <Button>End Interview</Button>
+          <Link
+            href={"/dashboard/interview/" + interviewData?.mockId + "/feedback"}
+          >
+            <Button>End Interview</Button>
+          </Link>
         )}
       </div>
     </div>
