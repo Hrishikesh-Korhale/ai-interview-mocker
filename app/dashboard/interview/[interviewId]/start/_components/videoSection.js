@@ -5,11 +5,7 @@ import Webcam from "react-webcam";
 import useSpeechToText from "react-hook-speech-to-text";
 import { Mic, StopCircle } from "lucide-react";
 import { toast } from "sonner";
-import { chatSession } from "@/utils/GeminiAI";
-import { db } from "@/utils/db";
-import { UserAnswer } from "@/utils/schema";
-import { useUser } from "@clerk/nextjs";
-import moment from "moment/moment";
+import { apiClient } from "../../../../../../utils/api";
 
 const VideoSection = ({
   mockInterviewQuestions,
@@ -19,7 +15,6 @@ const VideoSection = ({
 }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useUser();
   const {
     error,
     interimResult,
@@ -46,7 +41,7 @@ const VideoSection = ({
       } else if (userAnswer.length > 0) {
         // Show toast only when there’s a short response
         toast(
-          "⏳ Your response seems a bit short! Could you try recording again?"
+          "⏳ Your response seems a bit short! Could you try recording again?",
         );
       }
     }
@@ -63,40 +58,26 @@ const VideoSection = ({
 
   const updateUserAnswer = async () => {
     setLoading(true);
-    const feedbackPrompt =
-      "Question:" +
-      mockInterviewQuestions[activeQuestionIndex]?.Question +
-      ", User Answer:" +
-      userAnswer +
-      ",Depends on user answer for given interview question" +
-      " please give us rating for answer and feedback as area of imporvment if any" +
-      " in just 3 to 5 lines to improve it in JSON format with rating field and feedback field";
 
-    const result = await chatSession.sendMessage(feedbackPrompt);
-    let json = result.response.text();
-    json = json.replace(/```json|```/g, "");
-    const parsedJson = JSON.parse(json);
-    console.log(parsedJson);
+    try {
+      const answerData = {
+        mock_id: interviewData?.mock_id,
+        question: mockInterviewQuestions[activeQuestionIndex]?.question,
+        user_ans: userAnswer,
+      };
 
-    const resp = await db.insert(UserAnswer).values({
-      mockId: interviewData?.mockId,
-      question: mockInterviewQuestions[activeQuestionIndex]?.Question,
-      correctAns: mockInterviewQuestions[activeQuestionIndex]?.Answer,
-      userAns: userAnswer,
-      feedback: parsedJson?.feedback,
-      rating: parsedJson?.rating,
-      userEmail: user?.primaryEmailAddress?.emailAddress,
-      createdAt: moment.utc(),
-    });
-
-    if (resp) {
+      await apiClient.saveAnswer(answerData);
       setUserAnswer("");
       setResults([]);
-      toast.success("Your answer recorded sucessfully");
+      toast.success("Your answer recorded successfully");
+    } catch (error) {
+      console.error("Error saving answer:", error);
+      toast.error("Failed to save answer");
+    } finally {
+      setUserAnswer("");
+      setResults([]);
+      setLoading(false);
     }
-    setUserAnswer("");
-    setResults([]);
-    setLoading(false);
   };
 
   return (

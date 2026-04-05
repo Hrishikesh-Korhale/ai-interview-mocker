@@ -1,10 +1,9 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)", "/forum(.*),"]);
-
-export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) auth().protect();
-});
+export function middleware(request) {
+  // For now, allow all requests. Auth will be handled on the client side
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

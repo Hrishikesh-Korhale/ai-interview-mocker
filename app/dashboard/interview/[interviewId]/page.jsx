@@ -1,13 +1,11 @@
 "use client";
-import { db } from "@/utils/db";
-import { MockInterview } from "@/utils/schema";
 import React, { useEffect, useState } from "react";
-import { eq } from "drizzle-orm";
 import { useSearchParams } from "next/navigation";
 import Webcam from "react-webcam";
 import { Lightbulb, WebcamIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { apiClient } from "../../../../utils/api";
 
 const Interview = ({ params }) => {
   const [interviewData, setInterviewData] = useState();
@@ -18,12 +16,14 @@ const Interview = ({ params }) => {
   }, [params]);
 
   const getInterviewDetails = async () => {
-    const result = await db
-      .select()
-      .from(MockInterview)
-      .where(eq(MockInterview.mockId, params.interviewId));
-    setInterviewData(result[0]);
+    try {
+      const result = await apiClient.getInterview(params.interviewId);
+      setInterviewData(result);
+    } catch (error) {
+      console.error("Error fetching interview details:", error);
+    }
   };
+
   return (
     <div className="my-10 ">
       <h2 className="font-bold text-2xl">Let's Get Started</h2>
@@ -32,15 +32,15 @@ const Interview = ({ params }) => {
           <div className="flex flex-col my-5 gap-5 p-5 rounded-lg border">
             <h2 className="text-lg">
               <strong>Job Role/Job Position : </strong>
-              {interviewData?.jobPosition}
+              {interviewData?.job_position}
             </h2>
             <h2 className="text-lg">
               <strong>Job Description/Tech Stack : </strong>
-              {interviewData?.jobDesc}
+              {interviewData?.job_desc}
             </h2>
             <h2 className="text-lg">
               <strong>Years of Experience : </strong>
-              {interviewData?.jobExperience}
+              {interviewData?.job_experience}
             </h2>
           </div>
           <div className="p-5 border rounded-lg border-yellow-300 bg-yellow-100">

@@ -1,11 +1,18 @@
 "use client";
-import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import { apiClient } from "../../../utils/api";
 
 const Header = () => {
   const path = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    apiClient.logout();
+    router.push("/sign-in");
+  };
+
   return (
     <div
       style={{
@@ -49,7 +56,12 @@ const Header = () => {
         </ul>
       </div>
       <div>
-        <UserButton />
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+        >
+          Logout
+        </button>
       </div>
     </div>
   );

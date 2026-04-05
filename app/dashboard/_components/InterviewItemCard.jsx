@@ -7,24 +7,29 @@ const InterviewItemCard = ({ interview }) => {
   const router = useRouter();
 
   const RetakeClick = () => {
-    router.push(`/dashboard/interview/${interview?.mockId}`);
+    router.push(`/dashboard/interview/${interview?.mock_id}`);
   };
 
   const FeedbackClick = () => {
-    router.push(`/dashboard/interview/${interview?.mockId}/feedback`)
-  }
+    router.push(`/dashboard/interview/${interview?.mock_id}/feedback`);
+  };
 
   return (
     <div className="border shadow-sm rounded-lg p-3">
-      <h2 className="font-bold text-primary">{interview?.jobPosition}</h2>
+      <h2 className="font-bold text-primary">{interview?.job_position}</h2>
       <h2 className="text-sm text-gray-600">
-        {interview?.jobExperience} Year's of Experience
+        {interview?.job_experience} Year's of Experience
       </h2>
       <h2 className="text-xs text-gray-400">
-        Created At : {formatDateWithTime(JSON.parse(interview?.createdAt))}
+        Created At : {formatDateWithTime(new Date(interview?.created_at))}
       </h2>
       <div className="flex justify-between mt-2 gap-5">
-        <Button size="sm" variant="outline" className="w-full" onClick={() => FeedbackClick()}>
+        <Button
+          size="sm"
+          variant="outline"
+          className="w-full"
+          onClick={() => FeedbackClick()}
+        >
           Feedback
         </Button>
         <Button size="sm" className="w-full" onClick={() => RetakeClick()}>

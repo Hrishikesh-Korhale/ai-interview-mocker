@@ -35,11 +35,11 @@ export const QuestionSection = ({
             ))}
         </div>
         <h2 className="my-5 text-sm md:text-lg">
-          {mockInterviewQuestions[activeQuestionIndex]?.Question}
+          {mockInterviewQuestions[activeQuestionIndex]?.question}
         </h2>
         <Volume2
           onClick={() =>
-            textToSpeech(mockInterviewQuestions[activeQuestionIndex]?.Question)
+            textToSpeech(mockInterviewQuestions[activeQuestionIndex]?.question)
           }
           className="cursor-pointer"
         />

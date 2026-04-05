@@ -11,14 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { chatSession } from "@/utils/GeminiAI";
 import { LoaderCircle } from "lucide-react";
-import { MockInterview } from "@/utils/schema";
-import { v1 as uuidv1 } from "uuid";
-import { useUser } from "@clerk/nextjs";
-import moment from "moment/moment";
-import { db } from "@/utils/db";
 import { useRouter } from "next/navigation";
+import { apiClient } from "../../../utils/api";
 
 const AddNewInterview = () => {
   const router = useRouter();
@@ -27,8 +22,6 @@ const AddNewInterview = () => {
   const [jobDescription, setJobDescription] = useState();
   const [jobExperience, setJobExperience] = useState();
   const [loading, setLoading] = useState(false);
-  const [josnResponse, setJsonResponse] = useState([]);
-  const { user } = useUser();
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -40,41 +33,24 @@ const AddNewInterview = () => {
     e.preventDefault();
     console.log(jobPosition, jobDescription, jobExperience);
 
-    const InputPrompt = `Job Position : ${jobPosition}, Job Description : ${jobDescription},  Years of Experience : ${jobExperience}, Based on this information please give me 5 Interview Questions with Answers in JSON format. Give Question and Answer as fields in the JSON.`;
-
     try {
-      const result = await chatSession.sendMessage(InputPrompt);
-      let json = result.response.text(); // Ensure this is fetching the right data
-      json = json.replace(/```json|```/g, ""); // Remove both '```json' and '```'
+      const interviewData = {
+        job_position: jobPosition,
+        job_desc: jobDescription,
+        job_experience: jobExperience,
+      };
 
-      // Parse the cleaned JSON string
-      const parsedJson = JSON.parse(json);
+      const response = await apiClient.createInterview(interviewData);
+      console.log("Created interview:", response);
 
-      console.log(parsedJson);
-      setJsonResponse(json);
-      if (json) {
-        const resp = await db
-          .insert(MockInterview)
-          .values({
-            mockId: uuidv1(),
-            jsonMockResp: json,
-            jobPosition: jobPosition,
-            jobDesc: jobDescription,
-            jobExperience: jobExperience,
-            createdBy: user?.primaryEmailAddress?.emailAddress,
-            createdAt: moment.utc(),
-          })
-          .returning({ mockId: MockInterview.mockId });
-        console.log("Inserted MockId", resp);
-        if (resp) {
-          setOpenDialog(false);
-          router.push(`/dashboard/interview/${resp[0]?.mockId}`);
-        }
+      if (response.mock_id) {
+        setOpenDialog(false);
+        router.push(`/dashboard/interview/${response.mock_id}`);
       } else {
-        console.log("Error");
+        console.log("Error creating interview");
       }
     } catch (error) {
-      console.error("Error fetching or parsing the response:", error);
+      console.error("Error creating interview:", error);
     } finally {
       setLoading(false);
     }
@@ -143,8 +119,8 @@ const AddNewInterview = () => {
                   <Button type="submit" disabled={loading}>
                     {loading ? (
                       <>
-                        <LoaderCircle className="animate-spin" /> Generating
-                        from AI
+                        <LoaderCircle className="animate-spin" /> Creating
+                        Interview
                       </>
                     ) : (
                       "Start Interview"

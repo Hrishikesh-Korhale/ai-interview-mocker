@@ -1,33 +1,25 @@
 "use client";
-import { db } from "@/utils/db";
-import { MockInterview } from "@/utils/schema";
-import { useUser } from "@clerk/nextjs";
-import { desc, eq } from "drizzle-orm";
 import React, { useEffect, useState } from "react";
 import InterviewItemCard from "./InterviewItemCard";
+import { apiClient } from "../../../utils/api";
 
 const InterviewList = () => {
   const [mockInterviews, setMockInterviews] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const { user } = useUser();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      GetInterviewList();
-    }
-  }, [user]);
+    GetInterviewList();
+  }, []);
 
   const GetInterviewList = async () => {
-    const result = await db
-      .select()
-      .from(MockInterview)
-      .where(
-        eq(MockInterview.createdBy, user?.primaryEmailAddress.emailAddress)
-      )
-      .orderBy(desc(MockInterview.id));
-
-    setMockInterviews(result);
-    setLoading(false); // Set loading to false when data is fetched
+    try {
+      const result = await apiClient.getInterviews();
+      setMockInterviews(result);
+    } catch (error) {
+      console.error("Error fetching interviews:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

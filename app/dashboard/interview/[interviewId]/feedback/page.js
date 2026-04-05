@@ -1,7 +1,4 @@
 "use client";
-import { db } from "@/utils/db";
-import { UserAnswer } from "@/utils/schema";
-import { eq } from "drizzle-orm";
 import React, { useEffect, useState } from "react";
 import {
   Collapsible,
@@ -11,6 +8,7 @@ import {
 import { ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { apiClient } from "../../../../../utils/api";
 
 const Feedback = ({ params }) => {
   const router = useRouter();
@@ -24,20 +22,24 @@ const Feedback = ({ params }) => {
 
   const GetFeedback = async () => {
     setLoading(true);
-    const result = await db
-      .select()
-      .from(UserAnswer)
-      .where(eq(UserAnswer.mockId, params.interviewId))
-      .orderBy(UserAnswer.id);
-    console.log(result);
-    setFeedbackList(result);
-    setLoading(false);
+    try {
+      const result = await apiClient.getAnswers(params.interviewId);
+      console.log(result);
+      setFeedbackList(result);
 
-    // Calculate overall rating (if feedback exists)
-    if (result.length > 0) {
-      const totalRating = result.reduce((acc, feedback) => acc + Number(feedback.rating), 0);
-      const averageRating = totalRating / result.length;
-      setOverallRating(averageRating.toFixed(1)); // Round to 1 decimal place
+      // Calculate overall rating (if feedback exists)
+      if (result.length > 0) {
+        const totalRating = result.reduce(
+          (acc, feedback) => acc + Number(feedback.rating),
+          0,
+        );
+        const averageRating = totalRating / result.length;
+        setOverallRating(averageRating.toFixed(1)); // Round to 1 decimal place
+      }
+    } catch (error) {
+      console.error("Error fetching feedback:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,11 +81,11 @@ const Feedback = ({ params }) => {
                   </h2>
                   <h2 className="p-2 border rounded-lg bg-red-50 text-red-900">
                     <strong>Your Answer: </strong>
-                    {feedback.userAns}
+                    {feedback.user_ans}
                   </h2>
                   <h2 className="p-2 border rounded-lg bg-green-50 text-green-900">
                     <strong>Correct Answer: </strong>
-                    {feedback.correctAns}
+                    {feedback.correct_ans}
                   </h2>
                   <h2 className="p-2 border rounded-lg bg-blue-50 text-primary">
                     <strong>Feedback: </strong>
