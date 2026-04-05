@@ -19,9 +19,9 @@ const page = ({ params }) => {
   const getInterviewDetails = async () => {
     try {
       const result = await apiClient.getInterview(params.interviewId);
-      const questions = JSON.parse(result.json_mock_resp);
-      console.log(questions);
-      setMockInterviewQuestions(questions);
+      const parsedData = JSON.parse(result.json_mock_resp);
+      console.log(parsedData);
+      setMockInterviewQuestions(parsedData.questions);
       setInterviewData(result);
     } catch (error) {
       console.error("Error fetching interview details:", error);
