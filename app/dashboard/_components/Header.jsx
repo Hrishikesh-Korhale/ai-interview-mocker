@@ -26,6 +26,7 @@ const Header = () => {
       <div>
         <ul className={"hidden md:flex gap-6"}>
           <li
+            onClick={() => router.push("/dashboard")}
             className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${
               path === "/dashboard" ? "text-primary font-bold" : ""
             }`}
@@ -33,22 +34,25 @@ const Header = () => {
             Dashboard
           </li>
           <li
+            onClick={() => router.push("/questions")}
             className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${
-              path === "/Questions" ? "text-primary font-bold" : ""
+              path === "/questions" ? "text-primary font-bold" : ""
             }`}
           >
             Questions
           </li>
           <li
+            onClick={() => router.push("/upgrade")}
             className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${
-              path === "/Upgrade" ? "text-primary font-bold" : ""
+              path === "/upgrade" ? "text-primary font-bold" : ""
             }`}
           >
             Upgrade
           </li>
           <li
+            onClick={() => router.push("/how-it-works")}
             className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${
-              path === "/How it works" ? "text-primary font-bold" : ""
+              path === "/how-it-works" ? "text-primary font-bold" : ""
             }`}
           >
             How it works?
