@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { formatDateWithTime } from "@/utils/dateFormater";
 import { useRouter } from "next/navigation";

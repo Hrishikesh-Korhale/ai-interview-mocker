@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Header from "../dashboard/_components/Header";
 import { Button } from "@/components/ui/button";
